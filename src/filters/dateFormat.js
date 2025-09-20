@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 import moment from '@nextcloud/moment'
+import { formatJalaliDate, isPersianLocale } from '@/utils/jalali.js'
 
 /**
  * Formats a date object
@@ -13,9 +14,13 @@ import moment from '@nextcloud/moment'
  * @return {string}
  */
 export default (value, isAllDay, locale) => {
-	if (isAllDay) {
-		return moment(value).locale(locale).format('ll')
-	} else {
-		return moment(value).locale(locale).format('lll')
-	}
+        if (isPersianLocale(locale)) {
+                return formatJalaliDate(value, { includeTime: !isAllDay })
+        }
+
+        if (isAllDay) {
+                return moment(value).locale(locale).format('ll')
+        } else {
+                return moment(value).locale(locale).format('lll')
+        }
 }
