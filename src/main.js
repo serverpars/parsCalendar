@@ -12,11 +12,14 @@ import router from './router.js'
 import { getRequestToken } from '@nextcloud/auth'
 import { linkTo } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
-import { translate, translatePlural } from '@nextcloud/l10n'
+import { translate, translatePlural, getLanguage } from '@nextcloud/l10n'
+import moment from '@nextcloud/moment'
+import 'moment-jalaali'
 import AppointmentConfig from './models/appointmentConfig.js'
 import windowTitleService from './services/windowTitleService.js'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 import useAppointmentConfigsStore from './store/appointmentConfigs.js'
+import useSettingsStore from './store/settings.js'
 
 Vue.use(PiniaVuePlugin)
 const pinia = createPinia()
@@ -31,6 +34,13 @@ __webpack_nonce__ = btoa(getRequestToken())
 // We do not want the index.php since we're loading files
 // eslint-disable-next-line
 __webpack_public_path__ = linkTo('calendar', 'js/')
+
+const locale = getLanguage()
+if (locale === 'fa') {
+	moment.loadPersian({ usePersianDigits: true, dialect: 'persian-modern' })
+}
+const settingsStore = useSettingsStore(pinia)
+settingsStore.setMomentLocale({ locale })
 
 Vue.prototype.$t = translate
 Vue.prototype.$n = translatePlural

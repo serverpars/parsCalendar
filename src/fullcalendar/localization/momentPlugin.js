@@ -4,7 +4,6 @@
  */
 import moment from '@nextcloud/moment'
 import { createPlugin } from '@fullcalendar/core'
-import useSettingsStore from '../../store/settings.js'
 
 /**
  * Creates a new moment object using the locale from the global Pinia store

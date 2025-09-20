@@ -35,6 +35,7 @@ import select from '../fullcalendar/interaction/select.js'
 import { getDateFormattingConfig } from '../fullcalendar/localization/dateFormattingConfig.js'
 import { getFullCalendarLocale } from '../fullcalendar/localization/localeProvider.js'
 import momentPlugin from '../fullcalendar/localization/momentPlugin.js'
+import jalaliPlugin from '../fullcalendar/localization/jalaliPlugin.js'
 
 // Import rendering handlers
 import dayHeaderDidMount from '../fullcalendar/rendering/dayHeaderDidMount.js'
@@ -107,7 +108,7 @@ export default {
 			'widgetDate',
 		]),
 		options() {
-			return {
+			const options = {
 				// Initialization:
 				initialDate: getYYYYMMDDFromFirstdayParam(this.$route?.params?.firstDay ?? 'now'),
 				initialView: this.$route?.params.view ?? 'dayGridMonth',
@@ -158,6 +159,16 @@ export default {
 				droppable: true,
 				eventReceive: this.handleEventReceive,
 			}
+
+			if (this.locale === 'fa') {
+				options.calendarSystem = 'jalaali'
+				options.titleFormat = 'jMMMM jYYYY'
+				options.views.dayGridMonth.dayHeaderFormat = 'jddd'
+				options.views.multiMonthYear.dayHeaderFormat = 'jddd'
+				options.views.listMonth.listDayFormat = 'jLL, dddd'
+			}
+
+			return options
 		},
 		eventSources() {
 			if (this.isWidget) {
@@ -175,7 +186,7 @@ export default {
 		 * @return {(PluginDef)[]}
 		 */
 		plugins() {
-			return [
+			const plugins = [
 				momentPlugin,
 				VTimezoneNamedTimezone,
 				dayGridPlugin,
@@ -184,6 +195,10 @@ export default {
 				timeGridPlugin,
 				multiMonthPlugin,
 			]
+			if (this.locale === 'fa') {
+				plugins.push(jalaliPlugin)
+			}
+			return plugins
 		},
 		isEditable() {
 			// We do not allow drag and drop when the editor is open.

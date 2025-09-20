@@ -4,20 +4,23 @@
 -->
 
 <template>
-	<DateTimePicker id="date-time-picker-input"
+	<PersianDatePicker
+		:value="date"
 		:min="minimumDate"
 		:max="maximumDate"
-		:value="date"
 		:type="type"
-		:hide-label="true"
-		class="date-time-picker"
-		@input="change" />
+		:editable="true"
+		:alt-field-class-name="['date-time-picker']"
+		format="YYYY-MM-DD"
+		display-format="jYYYY-jMM-jDD"
+		alt-format="YYYY-MM-DD"
+		placeholder="Select a date"
+		@input="change"
+	/>
 </template>
 
 <script>
-import {
-	NcDateTimePickerNative as DateTimePicker,
-} from '@nextcloud/vue'
+import PersianDatePicker from 'vue-persian-datetime-picker'
 import { mapStores } from 'pinia'
 
 import useDavRestrictionsStore from '../../store/davRestrictions.js'
@@ -26,7 +29,7 @@ import debounce from 'debounce'
 export default {
 	name: 'DatePicker',
 	components: {
-		DateTimePicker,
+		PersianDatePicker,
 	},
 	props: {
 		date: {
@@ -75,13 +78,13 @@ export default {
 		 *
 		 * @param {Date} date The new Date object
 		 */
-		change: debounce(async function(date) {
+		change: debounce(function(date) {
 			if (this.disabledDate(date)) {
 				return
 			}
 
 			this.$emit('change', date)
-		}, 1000),
+		}, 200),
 		/**
 		 * Whether or not the date is acceptable
 		 *
