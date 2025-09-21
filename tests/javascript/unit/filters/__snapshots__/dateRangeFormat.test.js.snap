@@ -1,11 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
-// SPDX-FileCopyrightText: 2020 Nextcloud GmbH and Nextcloud contributors
-// SPDX-License-Identifier: AGPL-3.0-or-later
+
+exports[`format/dateRangeFormat test suite should provide Jalali month as fallback for unknown view when locale is Persian 1`] = `"۱۳۹۷ دی"`;
+
+exports[`format/dateRangeFormat test suite should provide a Jalali format for day view when locale is Persian 1`] = `"۱۱ دی ۱۳۹۷"`;
+
+exports[`format/dateRangeFormat test suite should provide a Jalali format for month view when locale is Persian 1`] = `"۱۳۹۷ دی"`;
+
+exports[`format/dateRangeFormat test suite should provide a Jalali format for week view when locale is Persian 1`] = `"Week ۴۱ of ۱٬۳۹۷"`;
 
 exports[`format/dateRangeFormat test suite should provide a format for day view 1`] = `"1. Jan. 2019"`;
 
 exports[`format/dateRangeFormat test suite should provide a format for month view 1`] = `"Januar 2019"`;
 
-exports[`format/dateRangeFormat test suite should provide a format for week view 1`] = `"Week {number} of {year}"`;
+exports[`format/dateRangeFormat test suite should provide a format for week view 1`] = `"Week 1 of 2019"`;
 
 exports[`format/dateRangeFormat test suite should provide month as fallback for unknown view 1`] = `"Januar 2019"`;

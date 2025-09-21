@@ -4,6 +4,14 @@
  */
 import moment from '@nextcloud/moment'
 import { translate as t } from '@nextcloud/l10n'
+import {
+        formatJalaliDate,
+        formatJalaliMonthYear,
+        formatJalaliNumber,
+        formatJalaliYear,
+        getJalaliWeekInfo,
+        isPersianLocale,
+} from '@/utils/jalali.js'
 
 /**
  * Formats a date-range depending on the user's current view
@@ -14,9 +22,37 @@ import { translate as t } from '@nextcloud/l10n'
  * @return {string}
  */
 export default (value, view, locale) => {
-	switch (view) {
-	case 'timeGridDay':
-		return moment(value).locale(locale).format('ll')
+        if (isPersianLocale(locale)) {
+                switch (view) {
+                case 'timeGridDay':
+                        return formatJalaliDate(value)
+
+                case 'timeGridWeek': {
+                        const { week, year } = getJalaliWeekInfo(value)
+
+                        if (Number.isNaN(week) || Number.isNaN(year)) {
+                                break
+                        }
+
+                        return t('calendar', 'Week {number} of {year}', {
+                                number: formatJalaliNumber(week),
+                                year: formatJalaliNumber(year),
+                        })
+                }
+
+                case 'multiMonthYear':
+                        return formatJalaliYear(value)
+
+                case 'dayGridMonth':
+                case 'listMonth':
+                default:
+                        return formatJalaliMonthYear(value)
+                }
+        }
+
+        switch (view) {
+        case 'timeGridDay':
+                return moment(value).locale(locale).format('ll')
 
 	case 'timeGridWeek':
 		return t('calendar', 'Week {number} of {year}', {

@@ -60,9 +60,9 @@ describe('format/alarmFormat test suite', () => {
 		expect(alarmFormat(alarm, true, 'Europe/Berlin', 'de')).toMatchSnapshot()
 	})
 
-	it('should format an alarm for an all-day event weeks weeks before', () => {
-		const alarm = {
-			type: 'EMAIL',
+        it('should format an alarm for an all-day event weeks weeks before', () => {
+                const alarm = {
+                        type: 'EMAIL',
 			isRelative: true,
 			absoluteDate: null,
 			absoluteTimezoneId: null,
@@ -77,8 +77,38 @@ describe('format/alarmFormat test suite', () => {
 			relativeTrigger: -159 * 60 * 60 - 30 * 60,
 		}
 
-		expect(alarmFormat(alarm, true, 'Europe/Berlin', 'de')).toMatchSnapshot()
-	})
+                expect(alarmFormat(alarm, true, 'Europe/Berlin', 'de')).toMatchSnapshot()
+        })
+
+        it('should format a Persian all-day alarm days before with Jalali time', () => {
+                const alarm = {
+                        type: 'EMAIL',
+                        isRelative: true,
+                        absoluteDate: null,
+                        absoluteTimezoneId: null,
+                        relativeIsBefore: true,
+                        relativeIsRelatedToStart: true,
+                        relativeAmountTimed: 0,
+                        relativeUnitTimed: 'minutes',
+                        relativeAmountAllDay: 1,
+                        relativeUnitAllDay: 'days',
+                        relativeHoursAllDay: 9,
+                        relativeMinutesAllDay: 0,
+                        relativeTrigger: -15 * 60 * 60,
+                }
+
+                alarmFormat(alarm, true, 'Asia/Tehran', 'fa')
+
+                expect(translatePlural).toHaveBeenCalledWith(
+                        'calendar',
+                        '%n day before the event at {formattedHourMinute}',
+                        '%n days before the event at {formattedHourMinute}',
+                        alarm.relativeAmountAllDay,
+                        expect.objectContaining({
+                                formattedHourMinute: '۰۹:۰۰',
+                        })
+                )
+        })
 
 	it('should format an alarm for an all-day event on the same day at a certain time', () => {
 		const alarm = {
@@ -261,9 +291,9 @@ describe('format/alarmFormat test suite', () => {
 		expect(alarmFormat(alarm, false, 'Europe/Berlin', 'de')).toEqual('on {time}')
 	})
 
-	it('should format an absolute alarm in a different timezone', () => {
-		const date = new Date(2019, 0, 1, 0, 0, 0, 0)
-		const alarm = {
+        it('should format an absolute alarm in a different timezone', () => {
+                const date = new Date(2019, 0, 1, 0, 0, 0, 0)
+                const alarm = {
 			type: 'EMAIL',
 			isRelative: false,
 			absoluteDate: date,
@@ -279,7 +309,68 @@ describe('format/alarmFormat test suite', () => {
 			relativeTrigger: null,
 		}
 
-		expect(alarmFormat(alarm, true, 'Europe/Berlin', 'de')).toEqual('on {time} ({timezoneId})')
-	})
+                expect(alarmFormat(alarm, true, 'Europe/Berlin', 'de')).toEqual('on {time} ({timezoneId})')
+        })
+
+        it('should format a Persian absolute alarm in the user\'s timezone', () => {
+                const date = new Date(2019, 0, 1, 0, 0, 0, 0)
+                const alarm = {
+                        type: 'EMAIL',
+                        isRelative: false,
+                        absoluteDate: date,
+                        absoluteTimezoneId: 'Asia/Tehran',
+                        relativeIsBefore: null,
+                        relativeIsRelatedToStart: null,
+                        relativeAmountTimed: null,
+                        relativeUnitTimed: null,
+                        relativeAmountAllDay: null,
+                        relativeUnitAllDay: null,
+                        relativeHoursAllDay: null,
+                        relativeMinutesAllDay: null,
+                        relativeTrigger: null,
+                }
+
+                const result = alarmFormat(alarm, false, 'Asia/Tehran', 'fa')
+
+                expect(result).toEqual('on {time}')
+                expect(translate).toHaveBeenCalledWith(
+                        'calendar',
+                        'on {time}',
+                        {
+                                time: 'سه‌شنبه، ۱۱ دی ۱۳۹۷ ساعت ۰۰:۰۰',
+                        }
+                )
+        })
+
+        it('should format a Persian absolute alarm in a different timezone', () => {
+                const date = new Date(2019, 0, 1, 0, 0, 0, 0)
+                const alarm = {
+                        type: 'EMAIL',
+                        isRelative: false,
+                        absoluteDate: date,
+                        absoluteTimezoneId: 'America/New_York',
+                        relativeIsBefore: null,
+                        relativeIsRelatedToStart: null,
+                        relativeAmountTimed: null,
+                        relativeUnitTimed: null,
+                        relativeAmountAllDay: null,
+                        relativeUnitAllDay: null,
+                        relativeHoursAllDay: null,
+                        relativeMinutesAllDay: null,
+                        relativeTrigger: null,
+                }
+
+                const result = alarmFormat(alarm, true, 'Asia/Tehran', 'fa')
+
+                expect(result).toEqual('on {time} ({timezoneId})')
+                expect(translate).toHaveBeenCalledWith(
+                        'calendar',
+                        'on {time} ({timezoneId})',
+                        {
+                                time: 'سه‌شنبه، ۱۱ دی ۱۳۹۷ ساعت ۰۰:۰۰',
+                                timezoneId: 'America/New_York',
+                        }
+                )
+        })
 
 })

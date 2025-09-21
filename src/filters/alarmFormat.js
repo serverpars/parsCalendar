@@ -5,6 +5,41 @@
 
 import { translate as t, translatePlural as n } from '@nextcloud/l10n'
 import moment from '@nextcloud/moment'
+import {
+        formatJalaliDate,
+        formatJalaliTime,
+        formatJalaliWeekday,
+        isPersianLocale,
+} from '@/utils/jalali.js'
+
+function formatLocalizedTime(date, locale) {
+        if (!isPersianLocale(locale)) {
+                return moment(date).locale(locale).format('LT')
+        }
+
+        const jalaliTime = formatJalaliTime(date)
+
+        if (jalaliTime) {
+                return jalaliTime
+        }
+
+        return moment(date).locale(locale).format('LT')
+}
+
+function formatLocalizedAbsolute(date, locale) {
+        if (!isPersianLocale(locale)) {
+                return moment(date).locale(locale).format('LLLL')
+        }
+
+        const longDate = formatJalaliDate(date, { includeTime: true })
+        const weekday = formatJalaliWeekday(date, { width: 'long' })
+
+        if (longDate && weekday) {
+                return `${weekday}، ${longDate}`
+        }
+
+        return longDate || weekday || moment(date).locale(locale).format('LLLL')
+}
 
 /**
  * Formats an alarm
@@ -28,7 +63,7 @@ export default (alarm, isAllDay, currentUserTimezone, locale) => {
 			date.setMinutes(alarm.relativeMinutesAllDay)
 			date.setSeconds(0)
 			date.setMilliseconds(0)
-			const formattedHourMinute = moment(date).locale(locale).format('LT')
+                        const formattedHourMinute = formatLocalizedTime(date, locale)
 
 			if (alarm.relativeTrigger < 0) {
 				if (alarm.relativeUnitAllDay === 'days') {
@@ -79,14 +114,14 @@ export default (alarm, isAllDay, currentUserTimezone, locale) => {
 	} else {
 		// absolute trigger
 		if (currentUserTimezone === alarm.absoluteTimezoneId) {
-			return t('calendar', 'on {time}', {
-				time: moment(alarm.absoluteDate).locale(locale).format('LLLL'),
-			})
-		} else {
-			return t('calendar', 'on {time} ({timezoneId})', {
-				time: moment(alarm.absoluteDate).locale(locale).format('LLLL'),
-				timezoneId: alarm.absoluteTimezoneId,
-			})
-		}
-	}
+                        return t('calendar', 'on {time}', {
+                                time: formatLocalizedAbsolute(alarm.absoluteDate, locale),
+                        })
+                } else {
+                        return t('calendar', 'on {time} ({timezoneId})', {
+                                time: formatLocalizedAbsolute(alarm.absoluteDate, locale),
+                                timezoneId: alarm.absoluteTimezoneId,
+                        })
+                }
+        }
 }
